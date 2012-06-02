@@ -1,0 +1,12 @@
+{
+  "name"          : "canvas",
+  "description"   : "html5 canvas in es.next",
+  "url"           : "http://kkasravi.github.com/canvas/",
+  "keywords"      : ["canvas", "html5"],
+  "author"        : "Kam Kasravi <kkasravi@yahoo.com>",
+  "contributors"  : [],
+  "dependencies"  : {require},
+  "lib"           : ".",
+  "main"          : "src/canvas.js",
+  "version"       : "0.1"
+}
