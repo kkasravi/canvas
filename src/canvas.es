@@ -777,6 +777,85 @@ module canvas {
       return true;
     }
   };
+  export class Text extends DisplayObject {
+    constructor(properties={text:"",font:null,color:'#000'}) {
+      private text, font, color, textAlign, textBaseline, maxWidth, outline, lineHeight, lineWidth;
+      DisplayObject.call(this, properties);
+      @text = properties.text;
+      @font = properties.font;
+      @color = properties.color;
+      @textAlign = properties.textAlign;
+      @textBaseline = properties.textBaseline;
+      @maxWidth = properties.maxWidth || 0;
+      @outline = properties.outline;
+      @lineHeight = properties.lineHeight || 0;
+      @lineWidth = properties.lineWidth || 0;
+    }
+    isVisible() {
+      return Boolean(@visible && @alpha > 0 && @scaleX != 0 && @scaleY != 0 && @text != null && @text != "");
+    }
+    draw(ctx, ignoreCache) {
+      if (DisplayObject.prototype.draw.call(this, ctx, ignoreCache)) { 
+        return true; 
+      }
+      if (@outline) { 
+        ctx.strokeStyle = @color; 
+      } else { 
+        ctx.fillStyle = @color; 
+      }
+      ctx.font = @font;
+      ctx.textAlign = @textAlign ? @textAlign : "start";
+      ctx.textBaseline = @textBaseline ? @textBaseline : "alphabetic";
+      var lines = String(@text).split(/(?:\r\n|\r|\n)/);
+      var lineHeight = (@lineHeight == null) ? @getMeasuredLineHeight() : @lineHeight;
+      var y = 0;
+      for (var i=0, l=lines.length; i<l; i++) {
+          var w = ctx.measureText(lines[i]).width;
+          if (@lineWidth == null || w < @lineWidth) {
+              @_drawTextLine(ctx, lines[i], y);
+              y += lineHeight;
+              continue;
+          }
+          // split up the line
+          var words = lines[i].split(/(\s)/);
+          var str = words[0];
+          for (var j=1, jl=words.length; j<jl; j+=2) {
+              // Line needs to wrap:
+              if (ctx.measureText(str + words[j] + words[j+1]).width > @lineWidth) {
+                  @_drawTextLine(ctx, str, y);
+                  y += lineHeight;
+                  str = words[j+1];
+              } else {
+                  str += words[j] + words[j+1];
+              }
+          }
+          @_drawTextLine(ctx, str, y); // Draw remaining text
+          y += lineHeight;
+      }
+      return true;
+    }
+    getMeasuredWidth() {
+      return @_getWorkingContext().measureText(@text).width;
+    }
+    getMeasuredLineHeight() {
+      return @_getWorkingContext().measureText("M").width*1.2;
+    }
+    _getWorkingContext() {
+      var ctx = Text._workingContext;
+      ctx.font = @font;
+      ctx.textAlign = @textAlign ? @textAlign : "start";
+      ctx.textBaseline = @textBaseline ? @textBaseline : "alphabetic";
+      return ctx;
+    }
+    _drawTextLine(ctx, text, y) {
+      if (@outline) { 
+        ctx.strokeText(text, 0, y, @maxWidth); 
+      } else { 
+        ctx.fillText(text, 0, y, @maxWidth); 
+      }
+    }
+    static _workingContext = document.createElement("canvas").getContext("2d")
+  };
   export class Container extends DisplayObject {
     constructor(properties={children:[]}) {
       private children;
@@ -796,13 +875,10 @@ module canvas {
       for (var i=0; i<l; i++) {
         var child = list[i];
         if (!child.isVisible()) { continue; }
-
         var shadow = false;
         var mtx = child._matrix.reinitialize(_mtx.a,_mtx.b,_mtx.c,_mtx.d,_mtx.tx,_mtx.ty,_mtx.alpha,_mtx.shadow,_mtx.compositeOperation);
-        mtx.appendTransform(child.x, child.y, child.scaleX, child.scaleY, child.rotation, child.skewX, child.skewY,
-                    child.regX, child.regY);
+        mtx.appendTransform(child.x, child.y, child.scaleX, child.scaleY, child.rotation, child.skewX, child.skewY, child.regX, child.regY);
         mtx.appendProperties(child.alpha, child.shadow, child.compositeOperation);
-  
         if (!(child instanceof Container && child.cacheCanvas == null)) {
           if (snap && child.snapToPixel && mtx.a == 1 && mtx.b == 0 && mtx.c == 0 && mtx.d == 1) {
             ctx.setTransform(mtx.a,  mtx.b, mtx.c, mtx.d, mtx.tx+0.5|0, mtx.ty+0.5|0);
@@ -934,13 +1010,11 @@ module canvas {
           return null;
         }
       }
-  
       // draw children one at a time, and check if we get a hit:
       var l = @children.length;
       for (var i=l-1; i>=0; i--) {
         var child = @children[i];
         if (!child.isVisible() || !child.mouseEnabled) { continue; }
-  
         if (child instanceof Container) {
           var result;
           if (hasHandler) {
@@ -951,8 +1025,7 @@ module canvas {
             result = child._getObjectsUnderPoint(x, y, arr, mouseEvents);
             if (!arr && result) { return result; }
           }
-        } else if (!mouseEvents || hasHandler || (mouseEvents&1 && (child.onPress || child.onClick || child.onDoubleClick)) ||
-                              (mouseEvents&2 && (child.onMouseOver || child.onMouseOut))) {
+        } else if (!mouseEvents || hasHandler || (mouseEvents&1 && (child.onPress || child.onClick || child.onDoubleClick)) || (mouseEvents&2 && (child.onMouseOver || child.onMouseOut))) {
           child.getConcatenatedMatrix(mtx);
           ctx.setTransform(mtx.a,  mtx.b, mtx.c, mtx.d, mtx.tx-x, mtx.ty-y);
           ctx.globalAlpha = mtx.alpha;

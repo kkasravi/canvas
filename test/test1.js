@@ -82,15 +82,9 @@ var Sparkles = (function() {
     this.stage.update();
   };
   Sparkles.prototype['clickCanvas'] = function(e) {
-    if(!e) {
-      var e=window.event;
-    }
     this.addSparkles(Math.random() * 200 + 100 | 0,e.pageX - this.element.offsetLeft,e.pageY - this.element.offsetTop,2);
   };
   Sparkles.prototype['moveCanvas'] = function(e) {
-    if(!e) {
-      var e=window.event;
-    }
     this.addSparkles(Math.random() * 2 + 1 | 0,e.pageX - this.element.offsetLeft,e.pageY - this.element.offsetTop,1);
   };
   Sparkles.prototype['addSparkles'] = function(count,x,y,speed) {
