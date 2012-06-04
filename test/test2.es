@@ -3,6 +3,7 @@ module canvas from 'canvas';
 class Hearts {
   constructor() {
     private element, stage, container, captureContainers, captureIndex;
+    @tick = @tick.bind(this);
     @element = monads.DOMable({tagName:'canvas'}).on('load').attributes({'id':'testCanvas',width:'980',height:'680'}).style({'background-color':'#000'}).insert(document.body).element();
     @stage = canvas.Stage({canvas:@element});
     var w = @element.width;
@@ -19,7 +20,7 @@ class Hearts {
       heart.y = -100;
       @container.addChild(heart);
     }
-    var text = canvas.Text({text:"the longer I'm with you\\nthe more I love you", font:"bold 24px Arial", color:"#312", textAligbn:'center',x:w/2,y:h/2});
+    var text = canvas.Text({text:"the longer I'm with you\\nthe more I love you", font:"bold 24px Arial", color:"#312", textAlign:'center',x:w/2,y:h/2});
     @stage.addChild(text);
     for (i=0; i<100; i++) {
         var captureContainer = canvas.Container();

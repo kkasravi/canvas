@@ -74,7 +74,6 @@ module canvas {
             sin = 0;
         }
         if (regX || regY) {
-            // append the registration offset:
             @tx -= regX; @ty -= regY;
         }
         if (skewX || skewY) {
@@ -407,7 +406,6 @@ module canvas {
         var ye = y + h;
         var xm = x + w / 2;
         var ym = y + h / 2;
-            
         @_activeInstructions.push(
             Command({f:@_ctx.moveTo, params:[x, ym]}),
             Command({f:@_ctx.bezierCurveTo, params:[x, ym-oy, xm-ox, y, xm, y]}),
@@ -419,12 +417,13 @@ module canvas {
     }
     drawPolyStar(x, y, radius, sides, pointSize, angle) {
         @_dirty = @_active = true;
-        if (pointSize == null) { pointSize = 0; }
+        if (pointSize == null) { 
+          pointSize = 0; 
+        }
         pointSize = 1-pointSize;
         if (angle == null) { angle = 0; }
         else { angle /= 180/Math.PI; }
         var a = Math.PI/sides;
-        
         @_activeInstructions.push(Command({f:@_ctx.moveTo, params:[x+Math.cos(angle)*radius, y+Math.sin(angle)*radius]}));
         for (var i=0; i<sides; i++) {
             angle += a;
@@ -439,7 +438,6 @@ module canvas {
     _updateInstructions() {
         @_instructions = @_oldInstructions.slice()
         @_instructions.push(Graphics.beginCmd);
-         
         if (@_fillInstructions) { @_instructions.push.apply(@_instructions, @_fillInstructions); }
         if (@_strokeInstructions) {
             @_instructions.push.apply(@_instructions, @_strokeInstructions);
@@ -447,14 +445,16 @@ module canvas {
                 @_instructions.push.apply(@_instructions, @_strokeStyleInstructions);
             }
         }
-        
         @_instructions.push.apply(@_instructions, @_activeInstructions);
-        
-        if (@_fillInstructions) { @_instructions.push(Graphics.fillCmd); }
-        if (@_strokeInstructions) { @_instructions.push(Graphics.strokeCmd); }
+        if (@_fillInstructions) { 
+          @_instructions.push(Graphics.fillCmd); 
+        }
+        if (@_strokeInstructions) { 
+          @_instructions.push(Graphics.strokeCmd); 
+        }
     }
     _newPath() {
-        if (@_dirty) { @_updateInstructions(); }
+        @_dirty && @_updateInstructions();
         @_oldInstructions = @_instructions;
         @_activeInstructions = [];
         @_active = @_dirty = false;
@@ -543,7 +543,7 @@ module canvas {
       @_applyFilters();
     }
     updateCache(compositeOperation) {
-      if (@cacheCanvas == null) { 
+      if(!@cacheCanvas) {
         throw "cache() must be called before updateCache()"; 
       }
       var ctx = @cacheCanvas.getContext("2d");
@@ -566,8 +566,7 @@ module canvas {
       while (o.parent) {
         o = o.parent;
       }
-      if (o instanceof Stage) { return o; }
-      return null;
+      return o instanceof Stage ? o : null;
     }
     localToGlobal(x, y) {
       var mtx = @getConcatenatedMatrix(@_matrix);
@@ -1045,7 +1044,7 @@ module canvas {
     constructor(properties={canvas:null}) {
       private _activeMouseTarget, _activeMouseEvent, _mouseOverIntervalID, _mouseOverX, _mouseOverY, _mouseOverTarget, autoClear, canvas, mouseInBounds, mouseX, mouseY, snapToPixelEnabled, tickOnUpdate;
       Container.call(this, properties);
-      @autoClear = true;
+      @autoClear = properties.autoClear || true;
       @snapToPixelEnabled = false;
       @mouseInBounds = false;
       @tickOnUpdate = true;

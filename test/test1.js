@@ -19,9 +19,9 @@ var Sparkles = (function() {
     Object.getOwnPropertyDescriptor(this,'bmpSeq') || Object.defineProperty(this,'bmpSeq', {get: function(){return bmpSeq;},set: function(e){bmpSeq=e;}});
     var args = Array.prototype.slice.call(arguments);
     var ctor = function () {
-      this.clickCanvas=this.clickCanvas.bind(this);
+      this.onclick=this.onclick.bind(this);
       this.onimageload=this.onimageload.bind(this);
-      this.moveCanvas=this.moveCanvas.bind(this);
+      this.onmove=this.onmove.bind(this);
       this.tick=this.tick.bind(this);
       this.imgSeq=new Image();
       this.element=monads.DOMable({
@@ -32,8 +32,9 @@ var Sparkles = (function() {
         height:'680'
       }).style({
         'background-color':'#000'
-      }).insert(document.body).element();
+      }).on(['click','touchend'],this.onclick).on(['touchmove','mousemove'],this.onmove).insert(document.body).element();
       this.stage=canvas.Stage({
+        autoClear:false,
         canvas:this.element
       });
       this.imgSeq.onload=this.onimageload;
@@ -42,13 +43,10 @@ var Sparkles = (function() {
     return ctor.apply(this,args) || this;
   }
   Sparkles.prototype['onimageload'] = function() {
-    this.element.onmousemove=this.moveCanvas;
-    this.element.onclick=this.clickCanvas;
     this.stage.addChild(canvas.Shape({
       alpha:0.33,
       graphics:canvas.Graphics().beginFill('#000').drawRect(0,0,this.element.width + 1,this.element.height)
     }));
-    this.stage.autoClear=false;
     this.bmpSeq=canvas.BitmapSequence({
       regX:10.5,
       regY:11.5,
@@ -81,10 +79,12 @@ var Sparkles = (function() {
     }
     this.stage.update();
   };
-  Sparkles.prototype['clickCanvas'] = function(e) {
+  Sparkles.prototype['onclick'] = function(e) {
     this.addSparkles(Math.random() * 200 + 100 | 0,e.pageX - this.element.offsetLeft,e.pageY - this.element.offsetTop,2);
   };
-  Sparkles.prototype['moveCanvas'] = function(e) {
+  Sparkles.prototype['onmove'] = function(e) {
+    e.preventDefault();
+    e.stopPropogation();
     this.addSparkles(Math.random() * 2 + 1 | 0,e.pageX - this.element.offsetLeft,e.pageY - this.element.offsetTop,1);
   };
   Sparkles.prototype['addSparkles'] = function(count,x,y,speed) {

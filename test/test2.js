@@ -22,6 +22,7 @@ var Hearts = (function() {
     Object.getOwnPropertyDescriptor(this,'captureIndex') || Object.defineProperty(this,'captureIndex', {get: function(){return captureIndex;},set: function(e){captureIndex=e;}});
     var args = Array.prototype.slice.call(arguments);
     var ctor = function () {
+      this.tick=this.tick.bind(this);
       this.element=monads.DOMable({
         tagName:'canvas'
       }).on('load').attributes({
@@ -52,7 +53,7 @@ var Hearts = (function() {
         text:"the longer I'm with you\nthe more I love you",
         font:"bold 24px Arial",
         color:"#312",
-        textAligbn:'center',
+        textAlign:'center',
         x:w / 2,
         y:h / 2
       });
