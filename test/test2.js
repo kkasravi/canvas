@@ -43,9 +43,7 @@ var Hearts = (function() {
       this.captureIndex=0;
       for(var i=0;i < 50;++i) {
         var heart=canvas.Shape();
-        heart.graphics.beginFill(canvas.Graphics.getHSL(Math.random() * 30 - 45,100,50 + Math.random() * 30));
-        heart.graphics.moveTo(0,-9).curveTo(0,-20,8,-20).curveTo(16,-20,16,-10).curveTo(16,0,0,12);
-        heart.graphics.curveTo(-16,0,-16,-10).curveTo(-16,-20,-8,-20).curveTo(0,-20,0,-9);
+        heart.graphics.beginFill(canvas.Graphics.getHSL(Math.random() * 30 - 45,100,50 + Math.random() * 30)).moveTo(0,-9).curveTo(0,-20,8,-20).curveTo(16,-20,16,-10).curveTo(16,0,0,12).curveTo(-16,0,-16,-10).curveTo(-16,-20,-8,-20).curveTo(0,-20,0,-9);
         heart.y=-100;
         this.container.addChild(heart);
       }

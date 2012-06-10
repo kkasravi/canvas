@@ -33,12 +33,18 @@ var ProgressBar = (function() {
     var totalHeight = p_vars.totalHeight;
     Object.getOwnPropertyDescriptor(this,'totalHeight') || Object.defineProperty(this,'totalHeight', {get: function(){return totalHeight;},set: function(e){totalHeight=e;}});
     var args = Array.prototype.slice.call(arguments);
-    var ctor = function () {
+    var ctor = function (_properties) {
+      var properties = _properties || {
+        initialX:20,
+        initialY:20,
+        totalWidth:300,
+        totalHeight:34
+      };
       this.tick=this.tick.bind(this);
-      this.totalWidth=300;
-      this.totalHeight=34;
-      this.initialX=20;
-      this.initialY=20;
+      this.totalWidth=properties.totalWidth;
+      this.totalHeight=properties.totalHeight;
+      this.initialX=properties.intialX;
+      this.initialY=properties.initialY;
       this.radius=this.totalHeight / 2;
       this.i=this.totalWidth;
       this.element=monads.DOMable({

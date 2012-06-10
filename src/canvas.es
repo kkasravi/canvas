@@ -1259,6 +1259,11 @@ module canvas {
         @_interval = interval;
         @_intervalID = setInterval(@_tick, interval);
     }
+    stop() {
+        if (@_intervalID != null) { 
+          clearInterval(@_intervalID); 
+        }
+    }
     getInterval() {
         return @_interval;
     }
@@ -1309,9 +1314,10 @@ module canvas {
             }
             listener.tick(elapsedTime);
         }
-        
         @_times.unshift(time);
-        if (@_times.length > 100) { @_times.pop(); }
+        if (@_times.length > 100) { 
+          @_times.pop(); 
+        }
     }
     _getTime() {
         return new Date().getTime();
