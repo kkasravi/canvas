@@ -44,7 +44,7 @@ class Sparkles {
   }
   onmove(e) {
     e.preventDefault();
-    e.stopPropogation();
+    e.stopPropagation();
     @addSparkles(Math.random()*2+1|0, e.pageX-@element.offsetLeft, e.pageY-@element.offsetTop, 1);
   }
   addSparkles(count, x, y, speed) {

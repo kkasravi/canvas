@@ -84,7 +84,7 @@ var Sparkles = (function() {
   };
   Sparkles.prototype['onmove'] = function(e) {
     e.preventDefault();
-    e.stopPropogation();
+    e.stopPropagation();
     this.addSparkles(Math.random() * 2 + 1 | 0,e.pageX - this.element.offsetLeft,e.pageY - this.element.offsetTop,1);
   };
   Sparkles.prototype['addSparkles'] = function(count,x,y,speed) {
