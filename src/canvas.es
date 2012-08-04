@@ -243,7 +243,7 @@ module canvas {
         }
         var instr = @_instructions;
         for (var i=0, l=instr.length; i<l; i++) {
-            instr[i].exec(ctx);
+            instr[i].exec ? instr[i].exec(ctx) : instr[i]();
         }
     }
     moveTo(x, y) {
@@ -1237,7 +1237,7 @@ module canvas {
             @_times.push(0);
             @setInterval(@_interval);
         }
-        this.removeListener(o);
+        @removeListener(o);
         @_pauseable[@_listeners.length] = (pauseable == null) ? true : pauseable;
         @_listeners.push(o);
     }
